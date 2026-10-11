@@ -1,766 +1,893 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Snoopy's Adventure para Niki 🌸</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      user-select: none;
-      -webkit-user-select: none;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      background-color: #fce4ec;
-      font-family: 'Courier New', Courier, monospace;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      overflow: hidden;
-    }
-    #game-container {
-      position: relative;
-      width: 100%;
-      max-width: 800px;
-      height: 450px;
-      background-color: #f8bbd0;
-      border: 4px solid #f48fb1;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(244, 143, 177, 0.3);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-    canvas {
-      width: 100%;
-      height: 370px;
-      display: block;
-    }
-    .hud {
-      position: absolute;
-      top: 12px;
-      left: 16px;
-      right: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: bold;
-      font-size: 14px;
-      color: #880e4f;
-      background: rgba(255, 255, 255, 0.85);
-      padding: 8px 16px;
-      border-radius: 20px;
-      backdrop-filter: blur(4px);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      z-index: 5;
-    }
-    .hud-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    #touch-panel {
-      height: 80px;
-      background: #e0d0cc;
-      border-top: 3px solid #f48fb1;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 24px;
-      z-index: 5;
-    }
-    .d-pad, .action-btns {
-      display: flex;
-      gap: 16px;
-    }
-    .btn {
-      width: 52px;
-      height: 52px;
-      background: #ffffff;
-      border: 2px solid #f48fb1;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      color: #ad1457;
-      font-weight: bold;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      touch-action: manipulation;
-      cursor: pointer;
-    }
-    .btn:active {
-      background: #f8bbd0;
-      transform: scale(0.94);
-    }
-    .modal {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(252, 228, 236, 0.96);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      text-align: center;
-      z-index: 10;
-    }
-    .modal h1 {
-      color: #880e4f;
-      font-size: 26px;
-      margin-bottom: 12px;
-    }
-    .modal p {
-      color: #ad1457;
-      font-size: 16px;
-      margin-bottom: 24px;
-    }
-    .modal-btn {
-      background: #f06292;
-      color: white;
-      border: none;
-      padding: 12px 28px;
-      font-size: 16px;
-      font-weight: bold;
-      border-radius: 25px;
-      box-shadow: 0 4px 12px rgba(240, 98, 146, 0.3);
-      cursor: pointer;
-    }
-    .modal-btn:active {
-      background: #e91e63;
-    }
-    .hidden {
-      display: none !important;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Snoopy's Flower Adventure - Feliz Cumple Niki!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #fbcfe8;
+            overflow: hidden;
+        }
+        .pixel-font {
+            font-family: 'Press Start 2P', monospace;
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background: linear-gradient(to bottom, #fce7f3 0%, #fbcfe8 70%, #f472b6 100%);
+            box-shadow: 0 10px 25px -5px rgba(244, 114, 182, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+        .retro-btn {
+            background: linear-gradient(to bottom, #ec4899, #be185d);
+            border-bottom: 4px solid #831843;
+            transition: transform 0.05s ease, border 0.05s ease;
+        }
+        .retro-btn:active {
+            transform: translateY(3px);
+            border-bottom: 1px solid #831843;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop {
+            animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+    </style>
 </head>
-<body>
+<body class="flex flex-col items-center justify-between min-h-screen p-2 select-none">
 
-<div id="game-container">
-  <div class="hud">
-    <div class="hud-group">
-      <span id="hud-level">Nivel 1</span>
-      <span id="hud-lives">❤️ ❤️ ❤️</span>
-    </div>
-    <div class="hud-group">
-      <span id="hud-items">🦴 0/3  💗 0/2</span>
-      <span id="hud-flowers">🌸 12/12</span>
-    </div>
-  </div>
+    <header class="w-full max-w-4xl flex justify-between items-center bg-pink-100/90 backdrop-blur-md px-4 py-2 rounded-2xl border-2 border-pink-300 shadow-sm my-1 z-10">
+        <div class="flex items-center gap-3">
+            <span class="pixel-font text-xs sm:text-sm text-pink-700 font-bold" id="levelDisplay">NIVEL 1</span>
+            <div class="flex items-center gap-1 bg-white/80 px-2 py-1 rounded-xl border border-pink-200">
+                <span class="text-sm">❤️</span>
+                <span class="pixel-font text-xs text-pink-600 font-bold" id="livesDisplay">x3</span>
+            </div>
+        </div>
 
-  <canvas id="gameCanvas" width="800" height="370"></canvas>
+        <div class="flex items-center gap-3">
+            <div class="flex items-center gap-1 bg-white/90 px-3 py-1 rounded-xl border-2 border-pink-400 shadow-inner">
+                <span class="text-base">🌸</span>
+                <span class="pixel-font text-xs sm:text-sm text-pink-800 font-bold" id="flowerDisplay">12 / 12</span>
+            </div>
 
-  <div id="touch-panel">
-    <div class="d-pad">
-      <div class="btn" id="btn-left">◀</div>
-      <div class="btn" id="btn-right">▶</div>
-    </div>
-    <div class="action-btns">
-      <div class="btn" id="btn-flower">🌸</div>
-      <div class="btn" id="btn-jump">▲</div>
-    </div>
-  </div>
+            <div class="flex items-center gap-1 bg-white/80 px-2 py-1 rounded-xl border border-pink-200">
+                <span class="text-sm">🦴</span>
+                <span class="pixel-font text-xs text-pink-600 font-bold" id="boneDisplay">0/3</span>
+            </div>
+        </div>
+    </header>
 
-  <!-- Pantallas Modales -->
-  <div id="modal-start" class="modal">
-    <h1>Snoopy's Adventure 🌸</h1>
-    <p>¡Ayuda a Snoopy a superar los 3 niveles para descubrir la sorpresa de Niki!</p>
-    <button class="modal-btn" onclick="startGame()">¡EMPEZAR A JUGAR!</button>
-  </div>
+    <main class="relative flex-1 flex items-center justify-center w-full max-w-4xl my-auto">
+        <canvas id="gameCanvas" class="rounded-3xl border-4 border-pink-400 max-w-full max-h-[70vh] aspect-[16/9] object-contain"></canvas>
 
-  <div id="modal-next" class="modal hidden">
-    <h1 id="next-title">¡Nivel Completado! 🎉</h1>
-    <p id="next-msg">¡Lo hiciste genial! Prepara tus flores para el siguiente mapa.</p>
-    <button class="modal-btn" onclick="nextLevel()">Pasar al Siguiente Nivel ▶</button>
-  </div>
+        <!-- Overlay Pantalla Inicio -->
+        <div id="startOverlay" class="absolute inset-0 bg-pink-900/40 backdrop-blur-md rounded-3xl flex flex-col items-center justify-center text-center p-6 text-white z-20">
+            <h1 class="pixel-font text-xl sm:text-3xl text-yellow-300 drop-shadow-[0_4px_0_rgba(190,24,93,1)] mb-4">
+                SNOOPY'S ADVENTURE 🌸
+            </h1>
+            <p class="text-base sm:text-lg mb-4 max-w-md font-medium text-pink-100">
+                ¡Ayuda a Snoopy a juntar todos los huesos 🦴 para celebrar el cumpleaños de Niki!
+            </p>
+            <div class="bg-pink-800/60 p-4 rounded-2xl border border-pink-300/40 mb-6 text-left text-xs sm:text-sm max-w-xs space-y-1">
+                <p>🌸 <b>Límite de Flores:</b> ¡Tienes solo 12 flores para TODO el juego!</p>
+                <p>☁️ <b>Nubes Oscuras:</b> Muestra su vida en pantalla (HP: 💗💗).</p>
+                <p>🎯 <b>Objetivo:</b> Junta todos los huesos para desbloquear la bandera.</p>
+            </div>
+            <button id="startBtn" class="retro-btn text-white pixel-font text-sm sm:text-base px-8 py-4 rounded-2xl shadow-lg">
+                ¡EMPEZAR JUEGO! 🚀
+            </button>
+        </div>
 
-  <div id="modal-gameover" class="modal hidden">
-    <h1>¡Oh no! 🐾</h1>
-    <p>Snoopy se quedó sin vidas. ¡Inténtalo de nuevo!</p>
-    <button class="modal-btn" onclick="restartLevel()">Reintentar Nivel 🔄</button>
-  </div>
+        <!-- Overlay Siguiente Nivel -->
+        <div id="nextOverlay" class="hidden absolute inset-0 bg-pink-950/70 backdrop-blur-md rounded-3xl flex flex-col items-center justify-center text-center p-6 text-white z-30">
+            <h2 id="nextTitle" class="pixel-font text-xl sm:text-3xl text-yellow-300 drop-shadow-[0_4px_0_rgba(190,24,93,1)] mb-3">
+                ¡NIVEL COMPLETADO! 🎉
+            </h2>
+            <p class="text-sm sm:text-base text-pink-100 mb-6" id="nextMsg">
+                ¡Excelente trabajo! Prepárate para el siguiente desafío.
+            </p>
+            <button id="nextLevelBtn" class="retro-btn text-white pixel-font text-sm px-6 py-3 rounded-2xl shadow-lg">
+                PASAR AL SIGUIENTE NIVEL ▶
+            </button>
+        </div>
 
-  <div id="modal-win" class="modal hidden">
-    <h1>🎂 ¡FELICIDADES NIKI! 🎁</h1>
-    <p style="font-size: 20px; font-weight: bold; color: #d81b60; margin: 15px 0;">
-      FELIZ CUMPLE NIKI, TE QUIERO MUCHOOOO ❤️
-    </p>
-    <p>¡Gracias por jugar y completar toda la aventura de Snoopy!</p>
-    <button class="modal-btn" onclick="restartGame()">Volver a Jugar 🔄</button>
-  </div>
-</div>
+        <!-- Overlay Game Over -->
+        <div id="gameOverOverlay" class="hidden absolute inset-0 bg-red-950/80 backdrop-blur-md rounded-3xl flex flex-col items-center justify-center text-center p-6 text-white z-30">
+            <h2 class="pixel-font text-2xl sm:text-4xl text-red-400 drop-shadow-[0_4px_0_rgba(0,0,0,1)] mb-3">
+                GAME OVER
+            </h2>
+            <p class="text-sm sm:text-base text-pink-200 mb-6" id="gameOverMsg">
+                ¡Snoopy perdió sus vidas! Inténtalo de nuevo.
+            </p>
+            <button id="restartBtn" class="retro-btn text-white pixel-font text-sm px-6 py-3 rounded-2xl shadow-lg">
+                REINTENTAR NIVEL 🔄
+            </button>
+        </div>
 
-<script>
-  const canvas = document.getElementById('gameCanvas');
-  const ctx = canvas.getContext('2d');
+        <!-- Overlay Tarjeta Cumpleaños Niki -->
+        <div id="victoryOverlay" class="hidden absolute inset-0 bg-pink-900/80 backdrop-blur-lg rounded-3xl flex flex-col items-center justify-center text-center p-6 text-white z-40 overflow-hidden">
+            <div class="animate-pop bg-gradient-to-b from-white to-pink-100 text-pink-900 p-6 sm:p-8 rounded-3xl border-4 border-yellow-300 shadow-2xl max-w-md w-full relative">
+                <div class="text-4xl mb-2">🎉 🎂 🎈</div>
+                <h2 class="pixel-font text-lg sm:text-2xl text-pink-600 mb-2 leading-tight">
+                    ¡FELICIDADES NIKI! 💖
+                </h2>
+                <div class="h-1 w-20 bg-pink-400 mx-auto rounded-full my-3"></div>
+                <p class="text-base sm:text-xl font-black text-purple-700 my-4 leading-snug">
+                    FELIZ CUMPLE NIKI, TE QUIERO MUCHOOOO 💖✨
+                </p>
+                <p class="text-xs sm:text-sm text-pink-600 mb-6 font-medium">
+                    ¡Completaste todos los niveles y ayudaste a Snoopy en su regalo especial!
+                </p>
+                <button id="playAgainBtn" class="retro-btn text-white pixel-font text-xs sm:text-sm px-6 py-3 rounded-2xl w-full shadow-md">
+                    VOLVER A JUGAR 🔁
+                </button>
+            </div>
+        </div>
+    </main>
 
-  // Sistema de Audio Web (Efectos 8-bit)
-  const AudioContext = window.AudioContext || window.webkitAudioContext;
-  let audioCtx;
+    <footer class="w-full max-w-4xl mt-1 mb-2 px-2 z-10">
+        <div class="flex justify-between items-center gap-2 max-w-md mx-auto">
+            <div class="flex gap-2">
+                <button id="btnLeft" class="retro-btn text-white text-2xl font-bold w-14 h-14 rounded-2xl flex items-center justify-center select-none active:scale-95">
+                    ◀
+                </button>
+                <button id="btnRight" class="retro-btn text-white text-2xl font-bold w-14 h-14 rounded-2xl flex items-center justify-center select-none active:scale-95">
+                    ▶
+                </button>
+            </div>
 
-  function playSound(type) {
-    if (!audioCtx) audioCtx = new AudioContext();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
+            <div class="flex gap-2">
+                <button id="btnShoot" class="retro-btn bg-gradient-to-b from-yellow-400 to-amber-600 border-amber-800 text-white text-lg font-bold px-4 h-14 rounded-2xl flex items-center justify-center gap-1 active:scale-95">
+                    🌸 <span class="pixel-font text-[10px]">FUEGO</span>
+                </button>
+                <button id="btnJump" class="retro-btn bg-gradient-to-b from-emerald-500 to-green-700 border-green-900 text-white text-2xl font-bold w-14 h-14 rounded-2xl flex items-center justify-center select-none active:scale-95">
+                    ▲
+                </button>
+            </div>
+        </div>
+        <div class="text-center text-[11px] text-pink-700 font-semibold mt-1 hidden sm:block">
+            Controles PC: Flechas / WASD para Mover/Saltar | [Espacio] o [F] para Disparar Flores
+        </div>
+    </footer>
 
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    const now = audioCtx.currentTime;
-
-    if (type === 'jump') {
-      osc.frequency.setValueAtTime(160, now);
-      osc.frequency.exponentialRampToValueAtTime(420, now + 0.12);
-      gain.gain.setValueAtTime(0.15, now);
-      gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
-      osc.start(now);
-      osc.stop(now + 0.12);
-    } else if (type === 'shoot') {
-      osc.type = 'square';
-      osc.frequency.setValueAtTime(550, now);
-      osc.frequency.exponentialRampToValueAtTime(220, now + 0.08);
-      gain.gain.setValueAtTime(0.1, now);
-      gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
-      osc.start(now);
-      osc.stop(now + 0.08);
-    } else if (type === 'item') {
-      osc.frequency.setValueAtTime(320, now);
-      osc.frequency.setValueAtTime(520, now + 0.07);
-      gain.gain.setValueAtTime(0.15, now);
-      gain.gain.linearRampToValueAtTime(0.01, now + 0.14);
-      osc.start(now);
-      osc.stop(now + 0.14);
-    } else if (type === 'hit') {
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(130, now);
-      osc.frequency.linearRampToValueAtTime(60, now + 0.18);
-      gain.gain.setValueAtTime(0.2, now);
-      gain.gain.linearRampToValueAtTime(0.01, now + 0.18);
-      osc.start(now);
-      osc.stop(now + 0.18);
-    } else if (type === 'win') {
-      [261, 329, 392, 523].forEach((freq, i) => {
-        const o = audioCtx.createOscillator();
-        const g = audioCtx.createGain();
-        o.connect(g);
-        g.connect(audioCtx.destination);
-        o.frequency.value = freq;
-        g.gain.setValueAtTime(0.12, now + i * 0.09);
-        g.gain.linearRampToValueAtTime(0.01, now + (i + 1) * 0.09);
-        o.start(now + i * 0.09);
-        o.stop(now + (i + 1) * 0.09);
-      });
-    }
-  }
-
-  // Estado del Juego
-  let currentLevel = 1;
-  let lives = 3;
-  let totalFlowers = 12; // 12 flores fijas
-  let gameState = 'START';
-  let animFrame = 0;
-
-  // Configuración de los Niveles
-  const levelData = {
-    1: {
-      worldWidth: 2000,
-      bonesNeeded: 3,
-      heartsNeeded: 2,
-      platforms: [
-        {x: 0, y: 320, w: 2200, h: 50},
-        {x: 300, y: 230, w: 120, h: 22},
-        {x: 550, y: 175, w: 140, h: 22},
-        {x: 850, y: 230, w: 120, h: 22},
-        {x: 1150, y: 165, w: 160, h: 22},
-        {x: 1450, y: 220, w: 140, h: 22}
-      ],
-      enemies: [
-        {x: 450, y: 290, w: 40, h: 26, speed: 1.4, dir: 1, range: [380, 580], hp: 1, maxHp: 1},
-        {x: 900, y: 290, w: 40, h: 26, speed: 1.6, dir: -1, range: [800, 1050], hp: 1, maxHp: 1},
-        {x: 1300, y: 290, w: 40, h: 26, speed: 1.8, dir: 1, range: [1200, 1480], hp: 1, maxHp: 1}
-      ],
-      items: [
-        {x: 340, y: 195, type: 'bone', collected: false},
-        {x: 600, y: 140, type: 'heart', collected: false},
-        {x: 900, y: 195, type: 'bone', collected: false},
-        {x: 1200, y: 130, type: 'heart', collected: false},
-        {x: 1500, y: 185, type: 'bone', collected: false}
-      ],
-      flag: {x: 1850, y: 220}
-    },
-    2: {
-      worldWidth: 2300,
-      bonesNeeded: 4,
-      heartsNeeded: 2,
-      platforms: [
-        {x: 0, y: 320, w: 600, h: 50},
-        {x: 700, y: 320, w: 700, h: 50},
-        {x: 1500, y: 320, w: 900, h: 50},
-        {x: 250, y: 230, w: 120, h: 22},
-        {x: 450, y: 170, w: 120, h: 22},
-        {x: 800, y: 220, w: 140, h: 22},
-        {x: 1050, y: 160, w: 120, h: 22},
-        {x: 1300, y: 230, w: 120, h: 22},
-        {x: 1650, y: 170, w: 150, h: 22}
-      ],
-      enemies: [
-        {x: 350, y: 290, w: 40, h: 26, speed: 2.0, dir: 1, range: [200, 500], hp: 1, maxHp: 1},
-        {x: 850, y: 190, w: 40, h: 26, speed: 2.2, dir: -1, range: [800, 930], hp: 2, maxHp: 2},
-        {x: 1100, y: 290, w: 40, h: 26, speed: 2.2, dir: 1, range: [950, 1300], hp: 1, maxHp: 1},
-        {x: 1700, y: 140, w: 40, h: 26, speed: 2.2, dir: -1, range: [1650, 1780], hp: 2, maxHp: 2}
-      ],
-      items: [
-        {x: 280, y: 195, type: 'bone', collected: false},
-        {x: 490, y: 135, type: 'heart', collected: false},
-        {x: 850, y: 185, type: 'bone', collected: false},
-        {x: 1090, y: 125, type: 'heart', collected: false},
-        {x: 1340, y: 195, type: 'bone', collected: false},
-        {x: 1700, y: 135, type: 'bone', collected: false}
-      ],
-      flag: {x: 2100, y: 220}
-    },
-    3: {
-      worldWidth: 2600,
-      bonesNeeded: 4,
-      heartsNeeded: 3,
-      platforms: [
-        {x: 0, y: 320, w: 450, h: 50},
-        {x: 550, y: 320, w: 500, h: 50},
-        {x: 1150, y: 320, w: 500, h: 50},
-        {x: 1750, y: 320, w: 900, h: 50},
-        {x: 200, y: 230, w: 100, h: 22},
-        {x: 380, y: 170, w: 110, h: 22},
-        {x: 650, y: 220, w: 120, h: 22},
-        {x: 880, y: 150, w: 110, h: 22},
-        {x: 1250, y: 210, w: 120, h: 22},
-        {x: 1480, y: 150, w: 110, h: 22},
-        {x: 1850, y: 220, w: 140, h: 22}
-      ],
-      enemies: [
-        {x: 250, y: 290, w: 42, h: 26, speed: 2.4, dir: 1, range: [100, 400], hp: 2, maxHp: 2},
-        {x: 680, y: 190, w: 42, h: 26, speed: 2.6, dir: -1, range: [650, 760], hp: 1, maxHp: 1},
-        {x: 1280, y: 180, w: 42, h: 26, speed: 2.5, dir: 1, range: [1250, 1360], hp: 2, maxHp: 2},
-        {x: 1800, y: 290, w: 42, h: 26, speed: 2.9, dir: -1, range: [1750, 2100], hp: 2, maxHp: 2}
-      ],
-      items: [
-        {x: 220, y: 195, type: 'bone', collected: false},
-        {x: 410, y: 135, type: 'heart', collected: false},
-        {x: 690, y: 185, type: 'bone', collected: false},
-        {x: 910, y: 115, type: 'heart', collected: false},
-        {x: 1290, y: 175, type: 'bone', collected: false},
-        {x: 1510, y: 115, type: 'heart', collected: false},
-        {x: 1900, y: 185, type: 'bone', collected: false}
-      ],
-      flag: {x: 2400, y: 220}
-    }
-  };
-
-  // Snoopy Ajustado (Tamaño Pequeño/Mediano)
-  const snoopy = {
-    x: 50,
-    y: 260,
-    w: 26,
-    h: 32,
-    vx: 0,
-    vy: 0,
-    speed: 4.0,
-    jumpPower: -10.8,
-    grounded: false,
-    facing: 'right',
-    walkCycle: 0
-  };
-
-  let projectiles = [];
-  let cameraX = 0;
-  let collectedBones = 0;
-  let collectedHearts = 0;
-
-  const keys = { left: false, right: false, jump: false, shoot: false };
-
-  window.addEventListener('keydown', e => {
-    if (e.key === 'ArrowLeft' || e.key === 'a') keys.left = true;
-    if (e.key === 'ArrowRight' || e.key === 'd') keys.right = true;
-    if (e.key === 'ArrowUp' || e.key === 'w' || e.key === ' ') {
-      if (!keys.jump && snoopy.grounded) {
-        snoopy.vy = snoopy.jumpPower;
-        snoopy.grounded = false;
-        playSound('jump');
-      }
-      keys.jump = true;
-    }
-    if (e.key === 'f' || e.key === 'x' || e.key === 'z') {
-      if (!keys.shoot) shootFlower();
-      keys.shoot = true;
-    }
-  });
-
-  window.addEventListener('keyup', e => {
-    if (e.key === 'ArrowLeft' || e.key === 'a') keys.left = false;
-    if (e.key === 'ArrowRight' || e.key === 'd') keys.right = false;
-    if (e.key === 'ArrowUp' || e.key === 'w' || e.key === ' ') keys.jump = false;
-    if (e.key === 'f' || e.key === 'x' || e.key === 'z') keys.shoot = false;
-  });
-
-  function bindTouch(id, keyName, isAction = false) {
-    const btn = document.getElementById(id);
-    btn.addEventListener('touchstart', e => {
-      e.preventDefault();
-      if (isAction) {
-        if (keyName === 'jump' && snoopy.grounded) {
-          snoopy.vy = snoopy.jumpPower;
-          snoopy.grounded = false;
-          playSound('jump');
-        } else if (keyName === 'shoot') {
-          shootFlower();
+    <script>
+        class SoundFX {
+            constructor() {
+                this.ctx = null;
+            }
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            }
+            playTone(freq, type, duration, vol = 0.1) {
+                if (!this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                    gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                } catch(e) {}
+            }
+            jump() {
+                if (!this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(450, this.ctx.currentTime + 0.15);
+                    gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.15);
+                } catch(e) {}
+            }
+            shoot() {
+                this.playTone(600, 'triangle', 0.1, 0.12);
+                setTimeout(() => this.playTone(800, 'sine', 0.1, 0.08), 50);
+            }
+            hit() {
+                this.playTone(120, 'sawtooth', 0.15, 0.2);
+            }
+            collect() {
+                this.playTone(523.25, 'sine', 0.08, 0.1);
+                setTimeout(() => this.playTone(659.25, 'sine', 0.12, 0.1), 80);
+            }
+            win() {
+                const notes = [261, 329, 392, 523];
+                notes.forEach((n, i) => {
+                    setTimeout(() => this.playTone(n, 'square', 0.2, 0.15), i * 150);
+                });
+            }
         }
-      }
-      keys[keyName] = true;
-    });
-    btn.addEventListener('touchend', e => {
-      e.preventDefault();
-      keys[keyName] = false;
-    });
-  }
 
-  bindTouch('btn-left', 'left');
-  bindTouch('btn-right', 'right');
-  bindTouch('btn-jump', 'jump', true);
-  bindTouch('btn-flower', 'shoot', true);
+        const sfx = new SoundFX();
 
-  function shootFlower() {
-    if (totalFlowers > 0 && gameState === 'PLAYING') {
-      totalFlowers--;
-      playSound('shoot');
-      projectiles.push({
-        x: snoopy.facing === 'right' ? snoopy.x + snoopy.w : snoopy.x - 10,
-        y: snoopy.y + 10,
-        w: 12,
-        h: 12,
-        vx: snoopy.facing === 'right' ? 8 : -8
-      });
-      updateHUD();
-    }
-  }
+        const SNOOPY_PIXEL_MAP = [
+            ".....BBBB.......",
+            "....BWWWWBB.....",
+            "...BWWWWWWWB....",
+            "..BBWWWWWWWWBB..",
+            ".BWBWWWWWBWWWWBB",
+            ".BWBWWWWWBWWWWWB",
+            ".BBWWWWWWWWWWWB.",
+            "..BWWWWWWWWBBB..",
+            "...BBWWWWBB.....",
+            ".....RRRR.......",
+            ".....BWB........",
+            "....BWB.........",
+            "...B.WB.........",
+            "..B..WB.........",
+            "..B.WWB.........",
+            "..BBWWB.........",
+            "...BBWWB........",
+            "...B..BB........",
+            "..BB...BB.......",
+            ".BBB...BBB......"
+        ];
 
-  function updateHUD() {
-    document.getElementById('hud-level').innerText = `Nivel ${currentLevel}`;
-    document.getElementById('hud-lives').innerText = '❤️ '.repeat(lives);
-    document.getElementById('hud-flowers').innerText = `🌸 ${totalFlowers}/12`;
-    
-    const lvl = levelData[currentLevel];
-    document.getElementById('hud-items').innerText = `🦴 ${collectedBones}/${lvl.bonesNeeded}  💗 ${collectedHearts}/${lvl.heartsNeeded}`;
-  }
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
 
-  function startGame() {
-    document.getElementById('modal-start').classList.add('hidden');
-    currentLevel = 1;
-    lives = 3;
-    totalFlowers = 12;
-    loadLevel(1);
-    gameState = 'PLAYING';
-    requestAnimationFrame(gameLoop);
-  }
+        const V_WIDTH = 800;
+        const V_HEIGHT = 450;
+        canvas.width = V_WIDTH;
+        canvas.height = V_HEIGHT;
 
-  function loadLevel(lvlNum) {
-    currentLevel = lvlNum;
-    const lvl = levelData[lvlNum];
-    snoopy.x = 50;
-    snoopy.y = 260;
-    snoopy.vx = 0;
-    snoopy.vy = 0;
-    cameraX = 0;
-    projectiles = [];
-    collectedBones = 0;
-    collectedHearts = 0;
+        let gameState = 'START';
+        let currentLevelIndex = 0;
+        let flowerCount = 12;
+        let playerLives = 3;
 
-    lvl.enemies.forEach(e => e.hp = e.maxHp);
-    lvl.items.forEach(i => i.collected = false);
+        const keys = { left: false, right: false, up: false, shoot: false };
 
-    updateHUD();
-  }
+        const LEVELS = [
+            {
+                name: "NIVEL 1",
+                bgGradient: ['#fce7f3', '#fbcfe8'],
+                requiredBones: 3,
+                platforms: [
+                    { x: 0, y: 400, w: 900, h: 50 },
+                    { x: 180, y: 310, w: 120, h: 20 },
+                    { x: 360, y: 240, w: 140, h: 20 },
+                    { x: 570, y: 170, w: 130, h: 20 },
+                    { x: 730, y: 300, w: 120, h: 20 }
+                ],
+                bones: [
+                    { x: 220, y: 270, taken: false },
+                    { x: 420, y: 200, taken: false },
+                    { x: 620, y: 130, taken: false }
+                ],
+                clouds: [
+                    { x: 300, y: 370, minX: 200, maxX: 450, vx: 1.2, hp: 1, maxHp: 1, w: 46, h: 28 },
+                    { x: 500, y: 210, minX: 400, maxX: 650, vx: 1.5, hp: 1, maxHp: 1, w: 46, h: 28 }
+                ],
+                flag: { x: 780, y: 320, w: 30, h: 80 }
+            },
+            {
+                name: "NIVEL 2",
+                bgGradient: ['#fbcfe8', '#f472b6'],
+                requiredBones: 4,
+                platforms: [
+                    { x: 0, y: 410, w: 220, h: 40 },
+                    { x: 270, y: 340, w: 110, h: 20 },
+                    { x: 440, y: 270, w: 120, h: 20 },
+                    { x: 200, y: 190, w: 130, h: 20 },
+                    { x: 600, y: 210, w: 110, h: 20 },
+                    { x: 750, y: 360, w: 200, h: 40 }
+                ],
+                bones: [
+                    { x: 310, y: 300, taken: false },
+                    { x: 480, y: 230, taken: false },
+                    { x: 250, y: 150, taken: false },
+                    { x: 640, y: 170, taken: false }
+                ],
+                clouds: [
+                    { x: 300, y: 310, minX: 270, maxX: 380, vx: 1.8, hp: 1, maxHp: 1, w: 46, h: 28 },
+                    { x: 450, y: 230, minX: 420, maxX: 580, vx: 2.0, hp: 2, maxHp: 2, w: 50, h: 32 },
+                    { x: 220, y: 150, minX: 180, maxX: 340, vx: 2.2, hp: 2, maxHp: 2, w: 50, h: 32 }
+                ],
+                flag: { x: 820, y: 280, w: 30, h: 80 }
+            },
+            {
+                name: "NIVEL 3 - DESAFÍO",
+                bgGradient: ['#f472b6', '#db2777'],
+                requiredBones: 5,
+                platforms: [
+                    { x: 0, y: 410, w: 160, h: 40 },
+                    { x: 220, y: 330, w: 100, h: 20, isMoving: true, minX: 180, maxX: 320, vx: 1.5 },
+                    { x: 380, y: 250, w: 100, h: 20, isMoving: true, minY: 180, maxY: 280, vy: 1.2 },
+                    { x: 540, y: 180, w: 110, h: 20 },
+                    { x: 700, y: 280, w: 100, h: 20, isMoving: true, minX: 650, maxX: 820, vx: 2.0 },
+                    { x: 860, y: 380, w: 140, h: 40 }
+                ],
+                bones: [
+                    { x: 80, y: 360, taken: false },
+                    { x: 260, y: 280, taken: false },
+                    { x: 420, y: 130, taken: false },
+                    { x: 580, y: 130, taken: false },
+                    { x: 740, y: 230, taken: false }
+                ],
+                clouds: [
+                    { x: 200, y: 290, minX: 160, maxX: 320, vx: 2.2, hp: 2, maxHp: 2, w: 52, h: 32 },
+                    { x: 400, y: 160, minX: 350, maxX: 490, vx: 2.5, hp: 1, maxHp: 1, w: 46, h: 28 },
+                    { x: 600, y: 240, minX: 520, maxX: 700, vx: 2.4, hp: 2, maxHp: 2, w: 52, h: 32 }
+                ],
+                flag: { x: 910, y: 300, w: 30, h: 80 }
+            }
+        ];
 
-  function restartLevel() {
-    document.getElementById('modal-gameover').classList.add('hidden');
-    lives = 3;
-    loadLevel(currentLevel);
-    gameState = 'PLAYING';
-  }
+        class SnoopyPlayer {
+            constructor() {
+                this.width = 26;
+                this.height = 32;
+                this.resetPosition();
+                this.vx = 0;
+                this.vy = 0;
+                this.speed = 4.2;
+                this.gravity = 0.55;
+                this.jumpPower = -11.5;
+                this.isGrounded = false;
+                this.facingRight = true;
+                this.invulnerableTimer = 0;
+                this.walkCycle = 0;
+            }
 
-  function restartGame() {
-    document.getElementById('modal-win').classList.add('hidden');
-    startGame();
-  }
+            resetPosition() {
+                this.x = 40;
+                this.y = 300;
+                this.vx = 0;
+                this.vy = 0;
+            }
 
-  function nextLevel() {
-    document.getElementById('modal-next').classList.add('hidden');
-    if (currentLevel < 3) {
-      loadLevel(currentLevel + 1);
-      gameState = 'PLAYING';
-    } else {
-      showWinModal();
-    }
-  }
+            update(currentLevel) {
+                if (keys.left) {
+                    this.vx = -this.speed;
+                    this.facingRight = false;
+                    this.walkCycle += 0.2;
+                } else if (keys.right) {
+                    this.vx = this.speed;
+                    this.facingRight = true;
+                    this.walkCycle += 0.2;
+                } else {
+                    this.vx = 0;
+                }
 
-  function showWinModal() {
-    gameState = 'WIN';
-    playSound('win');
-    document.getElementById('modal-win').classList.remove('hidden');
-  }
+                if (keys.up && this.isGrounded) {
+                    this.vy = this.jumpPower;
+                    this.isGrounded = false;
+                    sfx.jump();
+                }
 
-  function gameLoop() {
-    if (gameState === 'PLAYING') {
-      update();
-      render();
-      animFrame++;
-      requestAnimationFrame(gameLoop);
-    }
-  }
+                this.vy += this.gravity;
+                if (this.vy > 12) this.vy = 12;
 
-  function update() {
-    const lvl = levelData[currentLevel];
+                this.x += this.vx;
+                this.checkHorizontalCollisions(currentLevel.platforms);
 
-    if (keys.left) {
-      snoopy.vx = -snoopy.speed;
-      snoopy.facing = 'left';
-      snoopy.walkCycle += 0.25;
-    } else if (keys.right) {
-      snoopy.vx = snoopy.speed;
-      snoopy.facing = 'right';
-      snoopy.walkCycle += 0.25;
-    } else {
-      snoopy.vx *= 0.8;
-      if (Math.abs(snoopy.vx) < 0.1) snoopy.vx = 0;
-      snoopy.walkCycle = 0;
-    }
+                this.y += this.vy;
+                this.checkVerticalCollisions(currentLevel.platforms);
 
-    snoopy.vy += 0.58;
-    snoopy.x += snoopy.vx;
-    snoopy.y += snoopy.vy;
+                if (this.x < 0) this.x = 0;
 
-    snoopy.grounded = false;
-    lvl.platforms.forEach(p => {
-      if (snoopy.x + snoopy.w > p.x &&
-          snoopy.x < p.x + p.w &&
-          snoopy.y + snoopy.h >= p.y &&
-          snoopy.y + snoopy.h <= p.y + p.h + 8 &&
-          snoopy.vy >= 0) {
-        snoopy.y = p.y - snoopy.h;
-        snoopy.vy = 0;
-        snoopy.grounded = true;
-      }
-    });
+                if (this.y > V_HEIGHT + 60) {
+                    this.takeDamage();
+                }
 
-    if (snoopy.y > canvas.height + 40) {
-      takeDamage();
-    }
+                if (this.invulnerableTimer > 0) {
+                    this.invulnerableTimer--;
+                }
+            }
 
-    if (snoopy.x < 0) snoopy.x = 0;
-    if (snoopy.x > lvl.worldWidth - snoopy.w) snoopy.x = lvl.worldWidth - snoopy.w;
+            checkHorizontalCollisions(platforms) {
+                for (let plat of platforms) {
+                    if (this.x + this.width > plat.x &&
+                        this.x < plat.x + plat.w &&
+                        this.y + this.height > plat.y &&
+                        this.y < plat.y + plat.h) {
+                        
+                        if (this.vx > 0) {
+                            this.x = plat.x - this.width;
+                        } else if (this.vx < 0) {
+                            this.x = plat.x + plat.w;
+                        }
+                    }
+                }
+            }
 
-    projectiles.forEach((p, pIdx) => {
-      p.x += p.vx;
-      lvl.enemies.forEach(e => {
-        if (e.hp > 0 && p.x + p.w > e.x && p.x < e.x + e.w && p.y + p.h > e.y && p.y < e.y + e.h) {
-          e.hp--;
-          projectiles.splice(pIdx, 1);
-          playSound('hit');
+            checkVerticalCollisions(platforms) {
+                this.isGrounded = false;
+                for (let plat of platforms) {
+                    if (this.x + this.width > plat.x &&
+                        this.x < plat.x + plat.w &&
+                        this.y + this.height > plat.y &&
+                        this.y < plat.y + plat.h) {
+
+                        if (this.vy > 0 && (this.y + this.height - this.vy) <= plat.y + 10) {
+                            this.y = plat.y - this.height;
+                            this.vy = 0;
+                            this.isGrounded = true;
+
+                            if (plat.isMoving && plat.vx) {
+                                this.x += plat.vx;
+                            }
+                        } else if (this.vy < 0) {
+                            this.y = plat.y + plat.h;
+                            this.vy = 0;
+                        }
+                    }
+                }
+            }
+
+            takeDamage() {
+                if (this.invulnerableTimer > 0) return;
+
+                playerLives--;
+                sfx.hit();
+                updateHUD();
+
+                if (playerLives <= 0) {
+                    gameState = 'GAMEOVER';
+                    document.getElementById('gameOverOverlay').classList.remove('hidden');
+                } else {
+                    this.invulnerableTimer = 60;
+                    this.resetPosition();
+                }
+            }
+
+            draw(ctx) {
+                if (this.invulnerableTimer % 6 > 3) return;
+
+                ctx.save();
+                ctx.translate(Math.floor(this.x), Math.floor(this.y));
+
+                if (!this.facingRight) {
+                    ctx.translate(this.width, 0);
+                    ctx.scale(-1, 1);
+                }
+
+                const pixelSize = 1.6;
+                for (let r = 0; r < SNOOPY_PIXEL_MAP.length; r++) {
+                    const row = SNOOPY_PIXEL_MAP[r];
+                    for (let c = 0; c < row.length; c++) {
+                        const char = row[c];
+                        if (char === '.') continue;
+
+                        if (char === 'B') ctx.fillStyle = '#18181b';
+                        else if (char === 'W') ctx.fillStyle = '#ffffff';
+                        else if (char === 'R') ctx.fillStyle = '#ef4444';
+
+                        let offsetY = 0;
+                        if (r >= 16 && Math.sin(this.walkCycle) > 0 && Math.abs(this.vx) > 0.1) {
+                            offsetY = (c % 2 === 0) ? -1 : 1;
+                        }
+
+                        ctx.fillRect(c * pixelSize, r * pixelSize + offsetY, pixelSize, pixelSize);
+                    }
+                }
+
+                ctx.restore();
+            }
         }
-      });
-    });
 
-    lvl.enemies.forEach(e => {
-      if (e.hp <= 0) return;
-      e.x += e.speed * e.dir;
-      if (e.x < e.range[0] || e.x > e.range[1]) e.dir *= -1;
+        class FlowerProjectile {
+            constructor(x, y, facingRight) {
+                this.x = x;
+                this.y = y;
+                this.vx = facingRight ? 8 : -8;
+                this.radius = 8;
+                this.active = true;
+                this.rotation = 0;
+            }
 
-      if (snoopy.x + snoopy.w > e.x + 3 &&
-          snoopy.x < e.x + e.w - 3 &&
-          snoopy.y + snoopy.h > e.y + 3 &&
-          snoopy.y < e.y + e.h - 3) {
-        takeDamage();
-      }
-    });
+            update() {
+                this.x += this.vx;
+                this.rotation += 0.2;
 
-    lvl.items.forEach(i => {
-      if (!i.collected && snoopy.x + snoopy.w > i.x && snoopy.x < i.x + 20 && snoopy.y + snoopy.h > i.y && snoopy.y < i.y + 20) {
-        i.collected = true;
-        playSound('item');
-        if (i.type === 'bone') collectedBones++;
-        if (i.type === 'heart') collectedHearts++;
-        updateHUD();
-      }
-    });
+                if (this.x < -20 || this.x > V_WIDTH + 20) {
+                    this.active = false;
+                }
+            }
 
-    const flag = lvl.flag;
-    if (snoopy.x + snoopy.w > flag.x && snoopy.x < flag.x + 40 && snoopy.y + snoopy.h >= flag.y) {
-      if (collectedBones >= lvl.bonesNeeded && collectedHearts >= lvl.heartsNeeded) {
-        gameState = 'LEVEL_CLEAR';
-        playSound('win');
-        if (currentLevel < 3) {
-          document.getElementById('next-title').innerText = `¡Nivel ${currentLevel} Completado! 🎉`;
-          document.getElementById('next-msg').innerText = `¡Excelente! Pasas al Nivel ${currentLevel + 1}.`;
-          document.getElementById('modal-next').classList.remove('hidden');
-        } else {
-          showWinModal();
+            draw(ctx) {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+
+                ctx.fillStyle = '#f472b6';
+                for (let i = 0; i < 5; i++) {
+                    const angle = (i * Math.PI * 2) / 5;
+                    const px = Math.cos(angle) * 5;
+                    const py = Math.sin(angle) * 5;
+                    ctx.beginPath();
+                    ctx.arc(px, py, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.fillStyle = '#facc15';
+                ctx.beginPath();
+                ctx.arc(0, 0, 3, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.restore();
+            }
         }
-      }
-    }
 
-    cameraX += (snoopy.x - canvas.width / 3 - cameraX) * 0.1;
-    if (cameraX < 0) cameraX = 0;
-    if (cameraX > lvl.worldWidth - canvas.width) cameraX = lvl.worldWidth - canvas.width;
-  }
+        let player = new SnoopyPlayer();
+        let projectiles = [];
+        let particles = [];
 
-  function takeDamage() {
-    playSound('hit');
-    lives--;
-    updateHUD();
+        function spawnParticles(x, y, color) {
+            for (let i = 0; i < 8; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: (Math.random() - 0.5) * 6,
+                    life: 20,
+                    color: color
+                });
+            }
+        }
 
-    if (lives <= 0) {
-      gameState = 'GAMEOVER';
-      document.getElementById('modal-gameover').classList.remove('hidden');
-    } else {
-      snoopy.x = 50;
-      snoopy.y = 260;
-      snoopy.vx = 0;
-      snoopy.vy = 0;
-    }
-  }
+        function updateGame() {
+            if (gameState !== 'PLAYING') return;
 
-  // DIBUJO EXCLUSIVO DE CÉSPED VERDE CLARO
-  function render() {
-    const lvl = levelData[currentLevel];
+            const lvl = LEVELS[currentLevelIndex];
 
-    // Fondo Rosa Pastel
-    ctx.fillStyle = '#f8bbd0';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+            player.update(lvl);
 
-    ctx.save();
-    ctx.translate(-Math.floor(cameraX), 0);
+            lvl.platforms.forEach(p => {
+                if (p.isMoving) {
+                    if (p.vx) {
+                        p.x += p.vx;
+                        if (p.x <= p.minX || p.x + p.w >= p.maxX) p.vx *= -1;
+                    }
+                    if (p.vy) {
+                        p.y += p.vy;
+                        if (p.y <= p.minY || p.y + p.h >= p.maxY) p.vy *= -1;
+                    }
+                }
+            });
 
-    // Plataformas y Suelo Solamente de Césped
-    lvl.platforms.forEach(p => {
-      // Bloque principal de Césped
-      ctx.fillStyle = '#a8e6cf';
-      ctx.fillRect(p.x, p.y, p.w, p.h);
+            projectiles.forEach(p => p.update());
+            projectiles = projectiles.filter(p => p.active);
 
-      // Borde y detalles de hojitas/pasto pixelado
-      ctx.fillStyle = '#81c784';
-      ctx.fillRect(p.x, p.y + p.h - 4, p.w, 4); // Borde inferior
-      for (let x = p.x; x < p.x + p.w; x += 8) {
-        ctx.fillRect(x, p.y, 4, 3); // Dientitos de pasto arriba
-        ctx.fillRect(x + 2, p.y + 10, 3, 3);
-      }
-    });
+            lvl.clouds.forEach(cloud => {
+                if (cloud.hp <= 0) return;
 
-    // Items
-    lvl.items.forEach(i => {
-      if (!i.collected) {
-        ctx.font = '16px sans-serif';
-        ctx.fillText(i.type === 'bone' ? '🦴' : '💗', i.x, i.y + 14);
-      }
-    });
+                cloud.x += cloud.vx;
+                if (cloud.x <= cloud.minX || cloud.x + cloud.w >= cloud.maxX) {
+                    cloud.vx *= -1;
+                }
 
-    // Bandera de fin
-    const flag = lvl.flag;
-    ctx.fillStyle = '#8d6e63';
-    ctx.fillRect(flag.x + 10, flag.y, 5, 100);
-    
-    const wave = Math.sin(animFrame * 0.1) * 3;
-    ctx.fillStyle = '#f06292';
-    ctx.beginPath();
-    ctx.moveTo(flag.x + 15, flag.y + 5);
-    ctx.lineTo(flag.x + 50 + wave, flag.y + 20);
-    ctx.lineTo(flag.x + 15, flag.y + 35);
-    ctx.fill();
+                if (player.x + player.width > cloud.x &&
+                    player.x < cloud.x + cloud.w &&
+                    player.y + player.height > cloud.y &&
+                    player.y < cloud.y + cloud.h) {
+                    player.takeDamage();
+                }
 
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 11px sans-serif';
-    ctx.fillText(`N${currentLevel}`, flag.x + 20, flag.y + 23);
+                projectiles.forEach(proj => {
+                    if (proj.active &&
+                        proj.x > cloud.x && proj.x < cloud.x + cloud.w &&
+                        proj.y > cloud.y && proj.y < cloud.y + cloud.h) {
+                        
+                        proj.active = false;
+                        cloud.hp--;
+                        sfx.hit();
+                        spawnParticles(proj.x, proj.y, '#f472b6');
 
-    // Proyectiles
-    projectiles.forEach(p => {
-      ctx.font = '14px sans-serif';
-      ctx.fillText('🌸', p.x, p.y + 10);
-    });
+                        if (cloud.hp <= 0) {
+                            spawnParticles(cloud.x + cloud.w/2, cloud.y + cloud.h/2, '#4b5563');
+                        }
+                    }
+                });
+            });
 
-    // Enemigos Nubes Negras
-    lvl.enemies.forEach(e => {
-      if (e.hp <= 0) return;
+            let collectedCount = 0;
+            lvl.bones.forEach(b => {
+                if (!b.taken) {
+                    if (player.x + player.width > b.x - 12 &&
+                        player.x < b.x + 12 &&
+                        player.y + player.height > b.y - 12 &&
+                        player.y < b.y + 12) {
+                        
+                        b.taken = true;
+                        sfx.collect();
+                        spawnParticles(b.x, b.y, '#fef08a');
+                    }
+                } else {
+                    collectedCount++;
+                }
+            });
 
-      ctx.fillStyle = '#37474f';
-      ctx.beginPath();
-      ctx.arc(e.x + 12, e.y + 16, 11, 0, Math.PI * 2);
-      ctx.arc(e.x + 21, e.y + 10, 13, 0, Math.PI * 2);
-      ctx.arc(e.x + 30, e.y + 16, 11, 0, Math.PI * 2);
-      ctx.fill();
+            document.getElementById('boneDisplay').textContent = `${collectedCount}/${lvl.requiredBones}`;
 
-      ctx.fillStyle = '#ff5252';
-      ctx.fillRect(e.x + 14, e.y + 11, 3, 3);
-      ctx.fillRect(e.x + 23, e.y + 11, 3, 3);
+            const flag = lvl.flag;
+            const allBonesCollected = collectedCount >= lvl.requiredBones;
+            if (allBonesCollected &&
+                player.x + player.width > flag.x &&
+                player.x < flag.x + flag.w &&
+                player.y + player.height > flag.y &&
+                player.y < flag.y + flag.h) {
 
-      if (e.maxHp === 2) {
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 10px sans-serif';
-        ctx.fillText(e.hp === 2 ? '💗💗' : '💗', e.x + 8, e.y - 4);
-      }
-    });
+                sfx.win();
+                if (currentLevelIndex < LEVELS.length - 1) {
+                    gameState = 'LEVEL_CLEAR';
+                    document.getElementById('nextTitle').textContent = `¡NIVEL ${currentLevelIndex + 1} COMPLETADO! 🎉`;
+                    document.getElementById('nextMsg').textContent = `¡Snoopy junta más fuerzas para el Nivel ${currentLevelIndex + 2}!`;
+                    document.getElementById('nextOverlay').classList.remove('hidden');
+                } else {
+                    gameState = 'VICTORY';
+                    document.getElementById('victoryOverlay').classList.remove('hidden');
+                }
+            }
 
-    // Snoopy Pequeño/Mediano
-    drawSnoopy(snoopy.x, snoopy.y, snoopy.facing);
+            particles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life--;
+            });
+            particles = particles.filter(p => p.life > 0);
+        }
 
-    ctx.restore();
-  }
+        function drawGame() {
+            const lvl = LEVELS[currentLevelIndex];
 
-  function drawSnoopy(x, y, facing) {
-    ctx.save();
-    if (facing === 'left') {
-      ctx.translate(x + snoopy.w, y);
-      ctx.scale(-1, 1);
-    } else {
-      ctx.translate(x, y);
-    }
+            const bgGrad = ctx.createLinearGradient(0, 0, 0, V_HEIGHT);
+            bgGrad.addColorStop(0, lvl.bgGradient[0]);
+            bgGrad.addColorStop(1, lvl.bgGradient[1]);
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, V_WIDTH, V_HEIGHT);
 
-    const legOffset = Math.sin(snoopy.walkCycle) * 2.5;
+            lvl.platforms.forEach(p => {
+                ctx.fillStyle = '#a8e6cf';
+                ctx.fillRect(p.x, p.y, p.w, p.h);
 
-    // Cuerpo Blanco Proporcionado
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(6, 2, 16, 12);  // Cabeza
-    ctx.fillRect(19, 6, 6, 6);   // Hocico
-    ctx.fillRect(5, 14, 14, 12); // Cuerpo
-    ctx.fillRect(3, 17, 18, 7);  // Curva ligera
+                ctx.fillStyle = '#81c784';
+                ctx.fillRect(p.x, p.y + p.h - 3, p.w, 3);
+                for (let x = p.x; x < p.x + p.w; x += 8) {
+                    ctx.fillRect(x, p.y, 4, 3);
+                    ctx.fillRect(x + 2, p.y + 8, 3, 3);
+                }
+            });
 
-    // Patas animadas
-    ctx.fillRect(5 + legOffset, 26, 5, 5);
-    ctx.fillRect(13 - legOffset, 26, 5, 5);
+            const flag = lvl.flag;
+            const allBonesCollected = lvl.bones.filter(b => b.taken).length >= lvl.requiredBones;
 
-    // Oreja, Ojo, Nariz
-    ctx.fillStyle = '#212121';
-    ctx.fillRect(23, 6, 3, 3); // Nariz
-    ctx.fillRect(16, 4, 2, 4); // Ojo
-    ctx.fillRect(6, 4, 6, 10); // Oreja negra larga
+            ctx.fillStyle = '#8d6e63';
+            ctx.fillRect(flag.x + 5, flag.y, 4, flag.h);
 
-    // Brillo oreja
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(8, 6, 2, 2);
+            ctx.fillStyle = allBonesCollected ? '#ec4899' : '#94a3b8';
+            ctx.beginPath();
+            ctx.moveTo(flag.x + 9, flag.y);
+            ctx.lineTo(flag.x + 30, flag.y + 12);
+            ctx.lineTo(flag.x + 9, flag.y + 24);
+            ctx.closePath();
+            ctx.fill();
 
-    // Collar Rojo
-    ctx.fillStyle = '#e53935';
-    ctx.fillRect(6, 13, 13, 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 9px sans-serif';
+            ctx.fillText(`N${currentLevelIndex + 1}`, flag.x + 11, flag.y + 16);
 
-    // Zapatitos
-    ctx.fillStyle = '#212121';
-    ctx.fillRect(5 + legOffset, 29, 5, 2);
-    ctx.fillRect(13 - legOffset, 29, 5, 2);
+            if (!allBonesCollected) {
+                ctx.fillStyle = '#475569';
+                ctx.font = '10px sans-serif';
+                ctx.fillText('🔒', flag.x - 2, flag.y - 6);
+            }
 
-    ctx.restore();
-  }
+            lvl.bones.forEach(b => {
+                if (!b.taken) {
+                    ctx.save();
+                    ctx.translate(b.x, b.y);
+                    ctx.fillStyle = '#ffffff';
+                    
+                    ctx.fillRect(-8, -3, 16, 6);
+                    ctx.beginPath();
+                    ctx.arc(-8, -3, 4, 0, Math.PI*2);
+                    ctx.arc(-8, 3, 4, 0, Math.PI*2);
+                    ctx.arc(8, -3, 4, 0, Math.PI*2);
+                    ctx.arc(8, 3, 4, 0, Math.PI*2);
+                    ctx.fill();
 
-  updateHUD();
-</script>
+                    ctx.restore();
+                }
+            });
+
+            lvl.clouds.forEach(cloud => {
+                if (cloud.hp <= 0) return;
+
+                ctx.fillStyle = cloud.maxHp === 2 ? '#1f2937' : '#37474f';
+
+                ctx.beginPath();
+                ctx.arc(cloud.x + 12, cloud.y + 18, 12, 0, Math.PI * 2);
+                ctx.arc(cloud.x + 25, cloud.y + 12, 15, 0, Math.PI * 2);
+                ctx.arc(cloud.x + 38, cloud.y + 18, 12, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillRect(cloud.x + 10, cloud.y + 16, 30, 12);
+
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(cloud.x + 18, cloud.y + 14, 3, 5);
+                ctx.fillRect(cloud.x + 30, cloud.y + 14, 3, 5);
+
+                if (cloud.maxHp === 2) {
+                    ctx.save();
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+                    ctx.strokeStyle = '#be185d';
+                    ctx.lineWidth = 1;
+                    
+                    const badgeX = cloud.x + (cloud.w / 2) - 22;
+                    const badgeY = cloud.y - 18;
+                    
+                    ctx.beginPath();
+                    ctx.roundRect(badgeX, badgeY, 44, 16, 8);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    ctx.font = 'bold 9px sans-serif';
+                    ctx.fillStyle = '#be185d';
+                    ctx.textAlign = 'center';
+                    const hpText = cloud.hp === 2 ? "HP: 💗💗" : "HP: 💗";
+                    ctx.fillText(hpText, cloud.x + (cloud.w / 2), badgeY + 11);
+
+                    ctx.restore();
+                }
+            });
+
+            player.draw(ctx);
+
+            projectiles.forEach(p => p.draw(ctx));
+
+            particles.forEach(p => {
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x, p.y, 3, 3);
+            });
+        }
+
+        function updateHUD() {
+            document.getElementById('levelDisplay').textContent = LEVELS[currentLevelIndex].name;
+            document.getElementById('livesDisplay').textContent = `x${playerLives}`;
+            document.getElementById('flowerDisplay').textContent = `${flowerCount} / 12`;
+        }
+
+        function startLevel(index) {
+            currentLevelIndex = index;
+            player.resetPosition();
+            
+            LEVELS[index].bones.forEach(b => b.taken = false);
+            LEVELS[index].clouds.forEach(c => c.hp = c.maxHp);
+
+            projectiles = [];
+            particles = [];
+            updateHUD();
+        }
+
+        function resetWholeGame() {
+            flowerCount = 12;
+            playerLives = 3;
+            currentLevelIndex = 0;
+            startLevel(0);
+        }
+
+        function fireFlower() {
+            if (gameState !== 'PLAYING') return;
+
+            if (flowerCount > 0) {
+                flowerCount--;
+                updateHUD();
+                sfx.shoot();
+
+                const spawnX = player.facingRight ? player.x + player.width + 4 : player.x - 4;
+                const spawnY = player.y + 12;
+                projectiles.push(new FlowerProjectile(spawnX, spawnY, player.facingRight));
+            }
+        }
+
+        function setupControls() {
+            window.addEventListener('keydown', e => {
+                sfx.init();
+                if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = true;
+                if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = true;
+                if (e.code === 'ArrowUp' || e.code === 'KeyW' || e.code === 'Space') keys.up = true;
+                if (e.code === 'KeyF' || e.code === 'KeyX' || e.code === 'KeyZ') {
+                    if (!keys.shoot) {
+                        fireFlower();
+                        keys.shoot = true;
+                    }
+                }
+            });
+
+            window.addEventListener('keyup', e => {
+                if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = false;
+                if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = false;
+                if (e.code === 'ArrowUp' || e.code === 'KeyW' || e.code === 'Space') keys.up = false;
+                if (e.code === 'KeyF' || e.code === 'KeyX' || e.code === 'KeyZ') keys.shoot = false;
+            });
+
+            const bindTouchBtn = (id, onPress, onRelease) => {
+                const el = document.getElementById(id);
+                const handleStart = (e) => {
+                    e.preventDefault();
+                    sfx.init();
+                    onPress();
+                };
+                const handleEnd = (e) => {
+                    e.preventDefault();
+                    if (onRelease) onRelease();
+                };
+                el.addEventListener('touchstart', handleStart, { passive: false });
+                el.addEventListener('touchend', handleEnd, { passive: false });
+                el.addEventListener('mousedown', handleStart);
+                el.addEventListener('mouseup', handleEnd);
+            };
+
+            bindTouchBtn('btnLeft', () => keys.left = true, () => keys.left = false);
+            bindTouchBtn('btnRight', () => keys.right = true, () => keys.right = false);
+            bindTouchBtn('btnJump', () => keys.up = true, () => keys.up = false);
+            bindTouchBtn('btnShoot', () => fireFlower(), null);
+
+            document.getElementById('startBtn').addEventListener('click', () => {
+                sfx.init();
+                document.getElementById('startOverlay').classList.add('hidden');
+                resetWholeGame();
+                gameState = 'PLAYING';
+            });
+
+            document.getElementById('nextLevelBtn').addEventListener('click', () => {
+                sfx.init();
+                document.getElementById('nextOverlay').classList.add('hidden');
+                currentLevelIndex++;
+                startLevel(currentLevelIndex);
+                gameState = 'PLAYING';
+            });
+
+            document.getElementById('restartBtn').addEventListener('click', () => {
+                sfx.init();
+                document.getElementById('gameOverOverlay').classList.add('hidden');
+                playerLives = 3;
+                startLevel(currentLevelIndex);
+                gameState = 'PLAYING';
+            });
+
+            document.getElementById('playAgainBtn').addEventListener('click', () => {
+                sfx.init();
+                document.getElementById('victoryOverlay').classList.add('hidden');
+                resetWholeGame();
+                gameState = 'PLAYING';
+            });
+        }
+
+        function gameLoop() {
+            updateGame();
+            drawGame();
+            requestAnimationFrame(gameLoop);
+        }
+
+        window.onload = function() {
+            setupControls();
+            startLevel(0);
+            gameLoop();
+        };
+    </script>
 </body>
-</html>  
+</html>
