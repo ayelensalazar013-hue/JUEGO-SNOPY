@@ -317,40 +317,39 @@
                 flag: { x: 2450, y: 330, w: 30, h: 80 }
             },
             {
-                // NIVEL 3 TOTALMENTE CORREGIDO (Sin abismos fatales, plataformas sólidas y continuas)
+                // NUEVO MAPA NIVEL 3: Distancias cómodas, plataformas anchas y movimiento suave
                 name: "NIVEL 3 - DESAFÍO",
-                worldWidth: 3000,
+                worldWidth: 2800,
                 bgGradient: ['#f472b6', '#db2777'],
                 requiredBones: 5,
                 platforms: [
-                    // Suelo base continuo de seguridad para evitar reseteos injustos
-                    { x: 0, y: 410, w: 3200, h: 40 },
-                    // Plataformas escalonadas limpiecitas y fáciles de navegar
-                    { x: 280, y: 320, w: 150, h: 20 },
-                    { x: 480, y: 240, w: 160, h: 20, isMoving: true, minX: 450, maxX: 560, vx: 1.0 },
-                    { x: 700, y: 320, w: 180, h: 20 },
-                    { x: 950, y: 250, w: 160, h: 20 },
-                    { x: 1200, y: 320, w: 180, h: 20, isMoving: true, minX: 1180, maxX: 1320, vx: 1.1 },
-                    { x: 1450, y: 230, w: 170, h: 20 },
-                    { x: 1700, y: 310, w: 160, h: 20 },
-                    { x: 1950, y: 230, w: 180, h: 20, isMoving: true, minY: 200, maxY: 300, vy: 1.0 },
-                    { x: 2220, y: 310, w: 200, h: 20 },
-                    { x: 2500, y: 240, w: 220, h: 20 }
+                    { x: 0, y: 410, w: 3200, h: 40 }, // Piso continuo
+                    { x: 240, y: 320, w: 160, h: 20 },
+                    { x: 450, y: 240, w: 160, h: 20 },
+                    // Plataforma Móvil Suave (Paso seguro)
+                    { x: 670, y: 240, w: 150, h: 20, isMoving: true, minX: 650, maxX: 750, vx: 0.8 },
+                    { x: 860, y: 300, w: 180, h: 20 },
+                    { x: 1100, y: 230, w: 160, h: 20 },
+                    { x: 1320, y: 310, w: 170, h: 20 },
+                    { x: 1550, y: 220, w: 160, h: 20, isMoving: true, minY: 200, maxY: 260, vy: 0.8 },
+                    { x: 1780, y: 290, w: 180, h: 20 },
+                    { x: 2020, y: 220, w: 180, h: 20 },
+                    { x: 2260, y: 300, w: 200, h: 20 }
                 ],
                 bones: [
-                    { x: 320, y: 280, taken: false },
-                    { x: 750, y: 280, taken: false },
-                    { x: 1000, y: 210, taken: false },
-                    { x: 1500, y: 190, taken: false },
-                    { x: 2550, y: 200, taken: false }
+                    { x: 280, y: 280, taken: false },
+                    { x: 490, y: 200, taken: false },
+                    { x: 910, y: 260, taken: false },
+                    { x: 1360, y: 270, taken: false },
+                    { x: 2060, y: 180, taken: false }
                 ],
                 clouds: [
-                    { x: 400, y: 375, minX: 250, maxX: 600, vx: 1.8, hp: 2, maxHp: 2, w: 52, h: 32 },
-                    { x: 1050, y: 375, minX: 900, maxX: 1300, vx: 2.0, hp: 2, maxHp: 2, w: 52, h: 32 },
-                    { x: 1800, y: 375, minX: 1650, maxX: 2000, vx: 2.2, hp: 2, maxHp: 2, w: 52, h: 32 },
-                    { x: 2300, y: 375, minX: 2150, maxX: 2600, vx: 2.4, hp: 2, maxHp: 2, w: 52, h: 32 }
+                    { x: 380, y: 375, minX: 200, maxX: 550, vx: 1.8, hp: 2, maxHp: 2, w: 52, h: 32 },
+                    { x: 1000, y: 375, minX: 850, maxX: 1200, vx: 2.0, hp: 2, maxHp: 2, w: 52, h: 32 },
+                    { x: 1700, y: 375, minX: 1500, maxX: 1900, vx: 2.2, hp: 2, maxHp: 2, w: 52, h: 32 },
+                    { x: 2200, y: 375, minX: 2000, maxX: 2400, vx: 2.2, hp: 2, maxHp: 2, w: 52, h: 32 }
                 ],
-                flag: { x: 2850, y: 330, w: 30, h: 80 }
+                flag: { x: 2550, y: 330, w: 30, h: 80 }
             }
         ];
 
@@ -602,7 +601,6 @@
                     cloud.vx *= -1;
                 }
 
-                // Ajuste preciso de área de golpe de nubes para evitar reseteos falsos
                 if (player.x + player.width - 4 > cloud.x &&
                     player.x + 4 < cloud.x + cloud.w &&
                     player.y + player.height - 4 > cloud.y &&
