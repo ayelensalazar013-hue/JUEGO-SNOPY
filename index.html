@@ -258,82 +258,93 @@
         let currentLevelIndex = 0;
         let flowerCount = 12;
         let playerLives = 3;
+        let cameraX = 0;
 
         const keys = { left: false, right: false, up: false, shoot: false };
 
+        // NIVELES LARGOS EXTENDIDOS
         const LEVELS = [
             {
                 name: "NIVEL 1",
+                worldWidth: 2200,
                 bgGradient: ['#fce7f3', '#fbcfe8'],
                 requiredBones: 3,
                 platforms: [
-                    { x: 0, y: 400, w: 900, h: 50 },
-                    { x: 180, y: 310, w: 120, h: 20 },
-                    { x: 360, y: 240, w: 140, h: 20 },
-                    { x: 570, y: 170, w: 130, h: 20 },
-                    { x: 730, y: 300, w: 120, h: 20 }
+                    { x: 0, y: 400, w: 2400, h: 50 },
+                    { x: 250, y: 310, w: 140, h: 20 },
+                    { x: 500, y: 240, w: 150, h: 20 },
+                    { x: 800, y: 180, w: 140, h: 20 },
+                    { x: 1100, y: 280, w: 160, h: 20 },
+                    { x: 1400, y: 210, w: 150, h: 20 },
+                    { x: 1700, y: 290, w: 160, h: 20 }
                 ],
                 bones: [
-                    { x: 220, y: 270, taken: false },
-                    { x: 420, y: 200, taken: false },
-                    { x: 620, y: 130, taken: false }
+                    { x: 300, y: 270, taken: false },
+                    { x: 850, y: 140, taken: false },
+                    { x: 1450, y: 170, taken: false }
                 ],
                 clouds: [
-                    { x: 300, y: 370, minX: 200, maxX: 450, vx: 1.2, hp: 1, maxHp: 1, w: 46, h: 28 },
-                    { x: 500, y: 210, minX: 400, maxX: 650, vx: 1.5, hp: 1, maxHp: 1, w: 46, h: 28 }
+                    { x: 400, y: 370, minX: 300, maxX: 600, vx: 1.4, hp: 1, maxHp: 1, w: 46, h: 28 },
+                    { x: 1000, y: 370, minX: 900, maxX: 1250, vx: 1.6, hp: 1, maxHp: 1, w: 46, h: 28 },
+                    { x: 1550, y: 370, minX: 1400, maxX: 1750, vx: 1.8, hp: 1, maxHp: 1, w: 46, h: 28 }
                 ],
-                flag: { x: 780, y: 320, w: 30, h: 80 }
+                flag: { x: 2050, y: 320, w: 30, h: 80 }
             },
             {
                 name: "NIVEL 2",
+                worldWidth: 2600,
                 bgGradient: ['#fbcfe8', '#f472b6'],
                 requiredBones: 4,
                 platforms: [
-                    { x: 0, y: 410, w: 220, h: 40 },
-                    { x: 270, y: 340, w: 110, h: 20 },
-                    { x: 440, y: 270, w: 120, h: 20 },
-                    { x: 200, y: 190, w: 130, h: 20 },
-                    { x: 600, y: 210, w: 110, h: 20 },
-                    { x: 750, y: 360, w: 200, h: 40 }
+                    { x: 0, y: 410, w: 500, h: 40 },
+                    { x: 600, y: 340, w: 130, h: 20 },
+                    { x: 850, y: 260, w: 140, h: 20 },
+                    { x: 1100, y: 410, w: 600, h: 40 },
+                    { x: 1800, y: 310, w: 140, h: 20 },
+                    { x: 2050, y: 230, w: 150, h: 20 },
+                    { x: 2300, y: 410, w: 500, h: 40 }
                 ],
                 bones: [
-                    { x: 310, y: 300, taken: false },
-                    { x: 480, y: 230, taken: false },
-                    { x: 250, y: 150, taken: false },
-                    { x: 640, y: 170, taken: false }
+                    { x: 650, y: 300, taken: false },
+                    { x: 900, y: 220, taken: false },
+                    { x: 1850, y: 270, taken: false },
+                    { x: 2100, y: 190, taken: false }
                 ],
                 clouds: [
-                    { x: 300, y: 310, minX: 270, maxX: 380, vx: 1.8, hp: 1, maxHp: 1, w: 46, h: 28 },
-                    { x: 450, y: 230, minX: 420, maxX: 580, vx: 2.0, hp: 2, maxHp: 2, w: 50, h: 32 },
-                    { x: 220, y: 150, minX: 180, maxX: 340, vx: 2.2, hp: 2, maxHp: 2, w: 50, h: 32 }
+                    { x: 300, y: 380, minX: 200, maxX: 450, vx: 2.0, hp: 1, maxHp: 1, w: 46, h: 28 },
+                    { x: 1200, y: 380, minX: 1120, maxX: 1500, vx: 2.2, hp: 2, maxHp: 2, w: 50, h: 32 },
+                    { x: 2400, y: 380, minX: 2320, maxX: 2650, vx: 2.2, hp: 2, maxHp: 2, w: 50, h: 32 }
                 ],
-                flag: { x: 820, y: 280, w: 30, h: 80 }
+                flag: { x: 2450, y: 330, w: 30, h: 80 }
             },
             {
                 name: "NIVEL 3 - DESAFÍO",
+                worldWidth: 3000,
                 bgGradient: ['#f472b6', '#db2777'],
                 requiredBones: 5,
                 platforms: [
-                    { x: 0, y: 410, w: 160, h: 40 },
-                    { x: 220, y: 330, w: 100, h: 20, isMoving: true, minX: 180, maxX: 320, vx: 1.5 },
-                    { x: 380, y: 250, w: 100, h: 20, isMoving: true, minY: 180, maxY: 280, vy: 1.2 },
-                    { x: 540, y: 180, w: 110, h: 20 },
-                    { x: 700, y: 280, w: 100, h: 20, isMoving: true, minX: 650, maxX: 820, vx: 2.0 },
-                    { x: 860, y: 380, w: 140, h: 40 }
+                    { x: 0, y: 410, w: 400, h: 40 },
+                    { x: 500, y: 330, w: 120, h: 20, isMoving: true, minX: 450, maxX: 650, vx: 1.8 },
+                    { x: 800, y: 250, w: 130, h: 20 },
+                    { x: 1050, y: 410, w: 500, h: 40 },
+                    { x: 1650, y: 320, w: 120, h: 20, isMoving: true, minY: 220, maxY: 340, vy: 1.5 },
+                    { x: 1900, y: 210, w: 140, h: 20 },
+                    { x: 2200, y: 310, w: 130, h: 20, isMoving: true, minX: 2100, maxX: 2400, vx: 2.2 },
+                    { x: 2600, y: 410, w: 500, h: 40 }
                 ],
                 bones: [
-                    { x: 80, y: 360, taken: false },
-                    { x: 260, y: 280, taken: false },
-                    { x: 420, y: 130, taken: false },
-                    { x: 580, y: 130, taken: false },
-                    { x: 740, y: 230, taken: false }
+                    { x: 200, y: 370, taken: false },
+                    { x: 850, y: 210, taken: false },
+                    { x: 1250, y: 370, taken: false },
+                    { x: 1950, y: 170, taken: false },
+                    { x: 2700, y: 370, taken: false }
                 ],
                 clouds: [
-                    { x: 200, y: 290, minX: 160, maxX: 320, vx: 2.2, hp: 2, maxHp: 2, w: 52, h: 32 },
-                    { x: 400, y: 160, minX: 350, maxX: 490, vx: 2.5, hp: 1, maxHp: 1, w: 46, h: 28 },
-                    { x: 600, y: 240, minX: 520, maxX: 700, vx: 2.4, hp: 2, maxHp: 2, w: 52, h: 32 }
+                    { x: 200, y: 380, minX: 100, maxX: 350, vx: 2.2, hp: 2, maxHp: 2, w: 52, h: 32 },
+                    { x: 1150, y: 380, minX: 1080, maxX: 1450, vx: 2.5, hp: 2, maxHp: 2, w: 52, h: 32 },
+                    { x: 2750, y: 380, minX: 2650, maxX: 2950, vx: 2.8, hp: 2, maxHp: 2, w: 52, h: 32 }
                 ],
-                flag: { x: 910, y: 300, w: 30, h: 80 }
+                flag: { x: 2850, y: 330, w: 30, h: 80 }
             }
         ];
 
@@ -389,6 +400,7 @@
                 this.checkVerticalCollisions(currentLevel.platforms);
 
                 if (this.x < 0) this.x = 0;
+                if (this.x > currentLevel.worldWidth - this.width) this.x = currentLevel.worldWidth - this.width;
 
                 if (this.y > V_HEIGHT + 60) {
                     this.takeDamage();
@@ -504,7 +516,7 @@
                 this.x += this.vx;
                 this.rotation += 0.2;
 
-                if (this.x < -20 || this.x > V_WIDTH + 20) {
+                if (this.x < cameraX - 50 || this.x > cameraX + V_WIDTH + 50) {
                     this.active = false;
                 }
             }
@@ -555,6 +567,11 @@
             const lvl = LEVELS[currentLevelIndex];
 
             player.update(lvl);
+
+            // Cámara centrada suave
+            cameraX += (player.x - V_WIDTH / 3 - cameraX) * 0.1;
+            if (cameraX < 0) cameraX = 0;
+            if (cameraX > lvl.worldWidth - V_WIDTH) cameraX = lvl.worldWidth - V_WIDTH;
 
             lvl.platforms.forEach(p => {
                 if (p.isMoving) {
@@ -660,6 +677,9 @@
             ctx.fillStyle = bgGrad;
             ctx.fillRect(0, 0, V_WIDTH, V_HEIGHT);
 
+            ctx.save();
+            ctx.translate(-Math.floor(cameraX), 0);
+
             lvl.platforms.forEach(p => {
                 ctx.fillStyle = '#a8e6cf';
                 ctx.fillRect(p.x, p.y, p.w, p.h);
@@ -762,6 +782,8 @@
                 ctx.fillStyle = p.color;
                 ctx.fillRect(p.x, p.y, 3, 3);
             });
+
+            ctx.restore();
         }
 
         function updateHUD() {
@@ -773,6 +795,7 @@
         function startLevel(index) {
             currentLevelIndex = index;
             player.resetPosition();
+            cameraX = 0;
             
             LEVELS[index].bones.forEach(b => b.taken = false);
             LEVELS[index].clouds.forEach(c => c.hp = c.maxHp);
