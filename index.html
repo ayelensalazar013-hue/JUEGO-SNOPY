@@ -80,7 +80,7 @@
                 ¡Ayuda a Snoopy a juntar todos los huesos 🦴 para celebrar el cumpleaños de Niki!
             </p>
             <div class="bg-pink-800/60 p-4 rounded-2xl border border-pink-300/40 mb-6 text-left text-xs sm:text-sm max-w-xs space-y-1">
-                <p>🌸 <b>Límite de Flores:</b> ¡Tienes solo 12 flores para TODO el juego!</p>
+                <p>🌸 <b>Límite de Flores:</b> Tienes solo 12 flores para todo el juego.</p>
                 <p>☁️ <b>Nubes Oscuras:</b> Muestra su vida en pantalla (HP: 💗💗).</p>
                 <p>🎯 <b>Objetivo:</b> Junta todos los huesos para desbloquear la bandera.</p>
             </div>
@@ -127,7 +127,7 @@
                     FELIZ CUMPLE NIKI, TE QUIERO MUCHOOOO 💖✨
                 </p>
                 <p class="text-xs sm:text-sm text-pink-600 mb-6 font-medium">
-                    ¡Completaste todos los niveles y ayudaste a Snoopy en su regalo especial!
+                    ¡Completaste todos los niveles y ayudaste a Snoopy a preparar tu gran regalo especial!
                 </p>
                 <button id="playAgainBtn" class="retro-btn text-white pixel-font text-xs sm:text-sm px-6 py-3 rounded-2xl w-full shadow-md">
                     VOLVER A JUGAR 🔁
@@ -317,31 +317,30 @@
                 flag: { x: 2450, y: 330, w: 30, h: 80 }
             },
             {
-                // NUEVO MAPA NIVEL 3: Distancias cómodas, plataformas anchas y movimiento suave
                 name: "NIVEL 3 - DESAFÍO",
                 worldWidth: 2800,
                 bgGradient: ['#f472b6', '#db2777'],
                 requiredBones: 5,
                 platforms: [
-                    { x: 0, y: 410, w: 3200, h: 40 }, // Piso continuo
+                    { x: 0, y: 410, w: 3200, h: 40 }, // Suelo base
                     { x: 240, y: 320, w: 160, h: 20 },
-                    { x: 450, y: 240, w: 160, h: 20 },
-                    // Plataforma Móvil Suave (Paso seguro)
-                    { x: 670, y: 240, w: 150, h: 20, isMoving: true, minX: 650, maxX: 750, vx: 0.8 },
-                    { x: 860, y: 300, w: 180, h: 20 },
-                    { x: 1100, y: 230, w: 160, h: 20 },
-                    { x: 1320, y: 310, w: 170, h: 20 },
-                    { x: 1550, y: 220, w: 160, h: 20, isMoving: true, minY: 200, maxY: 260, vy: 0.8 },
-                    { x: 1780, y: 290, w: 180, h: 20 },
-                    { x: 2020, y: 220, w: 180, h: 20 },
-                    { x: 2260, y: 300, w: 200, h: 20 }
+                    { x: 450, y: 250, w: 160, h: 20 },
+                    // Plataforma móvil corregida que te desplaza suavemente
+                    { x: 670, y: 250, w: 160, h: 20, isMoving: true, minX: 650, maxX: 780, vx: 0.9 },
+                    { x: 890, y: 300, w: 180, h: 20 },
+                    { x: 1120, y: 230, w: 160, h: 20 },
+                    { x: 1350, y: 310, w: 170, h: 20 },
+                    { x: 1580, y: 240, w: 160, h: 20, isMoving: true, minX: 1560, maxX: 1680, vx: 0.9 },
+                    { x: 1810, y: 290, w: 180, h: 20 },
+                    { x: 2050, y: 220, w: 180, h: 20 },
+                    { x: 2300, y: 300, w: 200, h: 20 }
                 ],
                 bones: [
                     { x: 280, y: 280, taken: false },
-                    { x: 490, y: 200, taken: false },
-                    { x: 910, y: 260, taken: false },
-                    { x: 1360, y: 270, taken: false },
-                    { x: 2060, y: 180, taken: false }
+                    { x: 490, y: 210, taken: false },
+                    { x: 940, y: 260, taken: false },
+                    { x: 1390, y: 270, taken: false },
+                    { x: 2090, y: 180, taken: false }
                 ],
                 clouds: [
                     { x: 380, y: 375, minX: 200, maxX: 550, vx: 1.8, hp: 2, maxHp: 2, w: 52, h: 32 },
@@ -367,6 +366,7 @@
                 this.facingRight = true;
                 this.invulnerableTimer = 0;
                 this.walkCycle = 0;
+                this.standingPlatform = null;
             }
 
             resetPosition() {
@@ -374,6 +374,7 @@
                 this.y = 300;
                 this.vx = 0;
                 this.vy = 0;
+                this.standingPlatform = null;
             }
 
             update(currentLevel) {
@@ -392,11 +393,17 @@
                 if (keys.up && this.isGrounded) {
                     this.vy = this.jumpPower;
                     this.isGrounded = false;
+                    this.standingPlatform = null;
                     sfx.jump();
                 }
 
                 this.vy += this.gravity;
                 if (this.vy > 12) this.vy = 12;
+
+                // Si está sobre una plataforma móvil, aplicar su movimiento horizontal
+                if (this.isGrounded && this.standingPlatform && this.standingPlatform.isMoving && this.standingPlatform.vx) {
+                    this.x += this.standingPlatform.vx;
+                }
 
                 this.x += this.vx;
                 this.checkHorizontalCollisions(currentLevel.platforms);
@@ -420,8 +427,8 @@
                 for (let plat of platforms) {
                     if (this.x + this.width > plat.x &&
                         this.x < plat.x + plat.w &&
-                        this.y + this.height > plat.y &&
-                        this.y < plat.y + plat.h) {
+                        this.y + this.height > plat.y + 4 &&
+                        this.y < plat.y + plat.h - 2) {
                         
                         if (this.vx > 0) {
                             this.x = plat.x - this.width;
@@ -434,26 +441,25 @@
 
             checkVerticalCollisions(platforms) {
                 this.isGrounded = false;
+                let onPlat = null;
+
                 for (let plat of platforms) {
                     if (this.x + this.width > plat.x &&
-                        this.x < plat.x + plat.w &&
-                        this.y + this.height > plat.y &&
-                        this.y < plat.y + plat.h) {
+                        this.x < plat.x + plat.w) {
 
-                        if (this.vy > 0 && (this.y + this.height - this.vy) <= plat.y + 10) {
+                        // Aterrizaje firme desde arriba
+                        if (this.vy >= 0 && (this.y + this.height - this.vy) <= plat.y + 12 && (this.y + this.height) >= plat.y) {
                             this.y = plat.y - this.height;
                             this.vy = 0;
                             this.isGrounded = true;
-
-                            if (plat.isMoving && plat.vx) {
-                                this.x += plat.vx;
-                            }
-                        } else if (this.vy < 0) {
+                            onPlat = plat;
+                        } else if (this.vy < 0 && this.y < plat.y + plat.h && this.y > plat.y) {
                             this.y = plat.y + plat.h;
                             this.vy = 0;
                         }
                     }
                 }
+                this.standingPlatform = onPlat;
             }
 
             takeDamage() {
@@ -582,10 +588,6 @@
                     if (p.vx) {
                         p.x += p.vx;
                         if (p.x <= p.minX || p.x + p.w >= p.maxX) p.vx *= -1;
-                    }
-                    if (p.vy) {
-                        p.y += p.vy;
-                        if (p.y <= p.minY || p.y + p.h >= p.maxY) p.vy *= -1;
                     }
                 }
             });
