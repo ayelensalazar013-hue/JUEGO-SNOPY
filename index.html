@@ -322,29 +322,28 @@
                 bgGradient: ['#f472b6', '#db2777'],
                 requiredBones: 5,
                 platforms: [
-                    { x: 0, y: 410, w: 350, h: 40 },
-                    // Plataforma móvil suave
-                    { x: 380, y: 320, w: 140, h: 20, isMoving: true, minX: 350, maxX: 500, vx: 1.1 },
-                    // Repisa intermedia añadida para que el salto hacia abajo sea alcanzable y divertido
-                    { x: 530, y: 350, w: 110, h: 20 },
-                    { x: 670, y: 380, w: 300, h: 40 }, // Plataforma baja amplia con el hueso
-                    { x: 1050, y: 410, w: 500, h: 40 },
-                    { x: 1650, y: 320, w: 130, h: 20, isMoving: true, minY: 240, maxY: 340, vy: 1.2 },
-                    { x: 1900, y: 210, w: 140, h: 20 },
-                    { x: 2200, y: 310, w: 140, h: 20, isMoving: true, minX: 2150, maxX: 2380, vx: 1.4 },
-                    { x: 2600, y: 410, w: 500, h: 40 }
+                    { x: 0, y: 410, w: 380, h: 40 },
+                    // Secuencia perfecta: distancias coordinadas para que todo salto largo aterrice en plataforma
+                    { x: 340, y: 320, w: 140, h: 20, isMoving: true, minX: 320, maxX: 440, vx: 1.0 },
+                    { x: 500, y: 260, w: 150, h: 20 }, // Repisa elevada
+                    { x: 670, y: 350, w: 320, h: 40 }, // Repisa inferior suave que recibe el salto largo perfectamente
+                    { x: 1020, y: 410, w: 500, h: 40 },
+                    { x: 1550, y: 320, w: 140, h: 20, isMoving: true, minY: 250, maxY: 330, vy: 1.0 },
+                    { x: 1730, y: 220, w: 150, h: 20 },
+                    { x: 1920, y: 310, w: 150, h: 20, isMoving: true, minX: 1880, maxX: 2020, vx: 1.2 },
+                    { x: 2120, y: 410, w: 900, h: 40 }
                 ],
                 bones: [
                     { x: 180, y: 370, taken: false },
-                    { x: 780, y: 340, taken: false }, // Hueso alcanzable en la plataforma baja
-                    { x: 1250, y: 370, taken: false },
-                    { x: 1950, y: 170, taken: false },
-                    { x: 2700, y: 370, taken: false }
+                    { x: 550, y: 220, taken: false },
+                    { x: 800, y: 310, taken: false }, // Hueso alcanzable fácilmente tras el salto
+                    { x: 1780, y: 180, taken: false },
+                    { x: 2400, y: 370, taken: false }
                 ],
                 clouds: [
                     { x: 200, y: 380, minX: 100, maxX: 300, vx: 2.0, hp: 2, maxHp: 2, w: 52, h: 32 },
                     { x: 1150, y: 380, minX: 1080, maxX: 1450, vx: 2.4, hp: 2, maxHp: 2, w: 52, h: 32 },
-                    { x: 2750, y: 380, minX: 2650, maxX: 2950, vx: 2.6, hp: 2, maxHp: 2, w: 52, h: 32 }
+                    { x: 2500, y: 380, minX: 2350, maxX: 2750, vx: 2.6, hp: 2, maxHp: 2, w: 52, h: 32 }
                 ],
                 flag: { x: 2850, y: 330, w: 30, h: 80 }
             }
