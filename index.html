@@ -262,7 +262,6 @@
 
         const keys = { left: false, right: false, up: false, shoot: false };
 
-        // NIVELES LARGOS EXTENDIDOS
         const LEVELS = [
             {
                 name: "NIVEL 1",
@@ -324,17 +323,18 @@
                 requiredBones: 5,
                 platforms: [
                     { x: 0, y: 410, w: 400, h: 40 },
-                    { x: 500, y: 330, w: 120, h: 20, isMoving: true, minX: 450, maxX: 650, vx: 1.8 },
-                    { x: 800, y: 250, w: 130, h: 20 },
+                    // Plataforma móvil ajustada más cerca de la tercera repisa y más ancha para facilitar el salto
+                    { x: 400, y: 320, w: 150, h: 20, isMoving: true, minX: 380, maxX: 560, vx: 1.2 },
+                    { x: 650, y: 260, w: 140, h: 20 },
                     { x: 1050, y: 410, w: 500, h: 40 },
-                    { x: 1650, y: 320, w: 120, h: 20, isMoving: true, minY: 220, maxY: 340, vy: 1.5 },
+                    { x: 1650, y: 320, w: 130, h: 20, isMoving: true, minY: 240, maxY: 340, vy: 1.2 },
                     { x: 1900, y: 210, w: 140, h: 20 },
-                    { x: 2200, y: 310, w: 130, h: 20, isMoving: true, minX: 2100, maxX: 2400, vx: 2.2 },
+                    { x: 2200, y: 310, w: 140, h: 20, isMoving: true, minX: 2150, maxX: 2380, vx: 1.5 },
                     { x: 2600, y: 410, w: 500, h: 40 }
                 ],
                 bones: [
                     { x: 200, y: 370, taken: false },
-                    { x: 850, y: 210, taken: false },
+                    { x: 700, y: 220, taken: false },
                     { x: 1250, y: 370, taken: false },
                     { x: 1950, y: 170, taken: false },
                     { x: 2700, y: 370, taken: false }
@@ -568,7 +568,6 @@
 
             player.update(lvl);
 
-            // Cámara centrada suave
             cameraX += (player.x - V_WIDTH / 3 - cameraX) * 0.1;
             if (cameraX < 0) cameraX = 0;
             if (cameraX > lvl.worldWidth - V_WIDTH) cameraX = lvl.worldWidth - V_WIDTH;
