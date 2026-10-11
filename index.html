@@ -317,33 +317,38 @@
                 flag: { x: 2450, y: 330, w: 30, h: 80 }
             },
             {
+                // NIVEL 3 TOTALMENTE CORREGIDO (Sin abismos fatales, plataformas sólidas y continuas)
                 name: "NIVEL 3 - DESAFÍO",
                 worldWidth: 3000,
                 bgGradient: ['#f472b6', '#db2777'],
                 requiredBones: 5,
                 platforms: [
-                    { x: 0, y: 410, w: 380, h: 40 },
-                    // Secuencia perfecta: distancias coordinadas para que todo salto largo aterrice en plataforma
-                    { x: 340, y: 320, w: 140, h: 20, isMoving: true, minX: 320, maxX: 440, vx: 1.0 },
-                    { x: 500, y: 260, w: 150, h: 20 }, // Repisa elevada
-                    { x: 670, y: 350, w: 320, h: 40 }, // Repisa inferior suave que recibe el salto largo perfectamente
-                    { x: 1020, y: 410, w: 500, h: 40 },
-                    { x: 1550, y: 320, w: 140, h: 20, isMoving: true, minY: 250, maxY: 330, vy: 1.0 },
-                    { x: 1730, y: 220, w: 150, h: 20 },
-                    { x: 1920, y: 310, w: 150, h: 20, isMoving: true, minX: 1880, maxX: 2020, vx: 1.2 },
-                    { x: 2120, y: 410, w: 900, h: 40 }
+                    // Suelo base continuo de seguridad para evitar reseteos injustos
+                    { x: 0, y: 410, w: 3200, h: 40 },
+                    // Plataformas escalonadas limpiecitas y fáciles de navegar
+                    { x: 280, y: 320, w: 150, h: 20 },
+                    { x: 480, y: 240, w: 160, h: 20, isMoving: true, minX: 450, maxX: 560, vx: 1.0 },
+                    { x: 700, y: 320, w: 180, h: 20 },
+                    { x: 950, y: 250, w: 160, h: 20 },
+                    { x: 1200, y: 320, w: 180, h: 20, isMoving: true, minX: 1180, maxX: 1320, vx: 1.1 },
+                    { x: 1450, y: 230, w: 170, h: 20 },
+                    { x: 1700, y: 310, w: 160, h: 20 },
+                    { x: 1950, y: 230, w: 180, h: 20, isMoving: true, minY: 200, maxY: 300, vy: 1.0 },
+                    { x: 2220, y: 310, w: 200, h: 20 },
+                    { x: 2500, y: 240, w: 220, h: 20 }
                 ],
                 bones: [
-                    { x: 180, y: 370, taken: false },
-                    { x: 550, y: 220, taken: false },
-                    { x: 800, y: 310, taken: false }, // Hueso alcanzable fácilmente tras el salto
-                    { x: 1780, y: 180, taken: false },
-                    { x: 2400, y: 370, taken: false }
+                    { x: 320, y: 280, taken: false },
+                    { x: 750, y: 280, taken: false },
+                    { x: 1000, y: 210, taken: false },
+                    { x: 1500, y: 190, taken: false },
+                    { x: 2550, y: 200, taken: false }
                 ],
                 clouds: [
-                    { x: 200, y: 380, minX: 100, maxX: 300, vx: 2.0, hp: 2, maxHp: 2, w: 52, h: 32 },
-                    { x: 1150, y: 380, minX: 1080, maxX: 1450, vx: 2.4, hp: 2, maxHp: 2, w: 52, h: 32 },
-                    { x: 2500, y: 380, minX: 2350, maxX: 2750, vx: 2.6, hp: 2, maxHp: 2, w: 52, h: 32 }
+                    { x: 400, y: 375, minX: 250, maxX: 600, vx: 1.8, hp: 2, maxHp: 2, w: 52, h: 32 },
+                    { x: 1050, y: 375, minX: 900, maxX: 1300, vx: 2.0, hp: 2, maxHp: 2, w: 52, h: 32 },
+                    { x: 1800, y: 375, minX: 1650, maxX: 2000, vx: 2.2, hp: 2, maxHp: 2, w: 52, h: 32 },
+                    { x: 2300, y: 375, minX: 2150, maxX: 2600, vx: 2.4, hp: 2, maxHp: 2, w: 52, h: 32 }
                 ],
                 flag: { x: 2850, y: 330, w: 30, h: 80 }
             }
@@ -597,10 +602,11 @@
                     cloud.vx *= -1;
                 }
 
-                if (player.x + player.width > cloud.x &&
-                    player.x < cloud.x + cloud.w &&
-                    player.y + player.height > cloud.y &&
-                    player.y < cloud.y + cloud.h) {
+                // Ajuste preciso de área de golpe de nubes para evitar reseteos falsos
+                if (player.x + player.width - 4 > cloud.x &&
+                    player.x + 4 < cloud.x + cloud.w &&
+                    player.y + player.height - 4 > cloud.y &&
+                    player.y + 4 < cloud.y + cloud.h) {
                     player.takeDamage();
                 }
 
